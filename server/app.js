@@ -18,16 +18,17 @@ dotenv.config();
 connectDB()
 
 const jwtSecret = process.env.JWT_SECRET;
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 8080 
 
 const app = express();
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(cors({
-    credentials: true,
     origin: process.env.CLIENT_URL,
+    credentials: true
 }));
 
 app.use('/api', auth)
@@ -37,7 +38,7 @@ app.get('/api/profile', (req, res) => {
     const token = req.cookies?.token;
     if (token) {
         jwt.verify(token, jwtSecret, {}, (err, userData) => {
-            if (err) throw err;
+            if (err) throw err; 
             res.json(userData);
         });
     } else {
@@ -50,7 +51,10 @@ app.get('/api/people', async (req, res) => {
     res.json(users);
 });
 
-const server = app.listen(PORT)
+const server = app.listen(PORT, () => {
+    console.log(`running on ${PORT}`)
+})
+
 const wss = new ws.WebSocketServer({ server });
 wss.on('connection', (connection, req) => {
 
